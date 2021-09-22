@@ -1,4 +1,4 @@
-const ytdl = require('ytdl-core')
+const ytdl = require('ytdl-core-discord')
 const ytSearch = require('yt-search');
 const Discord = require("discord.js");
 const { MessageAttachment } = require('discord.js');
@@ -48,7 +48,8 @@ module.exports = {
                     voiceChannel: voiceChannel,
                     textChannel: message.channel,
                     connection: null,
-                    songs: []
+                    timer: 0,
+                    songs: [],
                 }
 
                 queue.set(message.guild.id, queueConstructor);
@@ -77,16 +78,21 @@ module.exports = {
 const videoPlayer = async (guild, song) => {
     const songQueue = queue.get(guild.id);
 
-    if(!song) {
-        // songQueue.voiceChannel.leave();
+    if(!song) {        
         queue.delete(guild.id);
+
+        songQueue.timer = setTimeout(() => {
+            songQueue.voiceChannel.leave();
+        }, 60 * 1000);
+
         return;
     }
 
-    const stream = ytdl(song.url, { filter: 'audioonly'});
-    songQueue.connection.play(stream, { seek: 0, volume: 0.5 })
+    const stream = await ytdl(song.url, { filter: 'audioonly'});
+    songQueue.connection.play(stream, { seek: 0, volume: 0.5, type: 'opus' })
     .on('finish', () => {
         songQueue.songs.shift();
+        clearTimeout(songQueue.timer);
         videoPlayer(guild, songQueue.songs[0]);
     });
     // await songQueue.textChannel.send(`Tocando **${song.title}**.\n${song.url}`);
@@ -95,10 +101,8 @@ const videoPlayer = async (guild, song) => {
 
 const skipSong = (message, serverQueue) => {
     if (!message.member.voice.channel) return message.channel.send('Você precisa estar em um canal para executar esse comando.');
-    if(!serverQueue)
-    {
-        return message.channel.send(`Não há sons na fila de reprodução.`);
-    }
+    
+    if(!serverQueue) return message.channel.send(`Não há sons na fila de reprodução.`);
     
     serverQueue.connection.dispatcher.end();
     
@@ -111,5 +115,4 @@ const stopSong = (message, serverQueue) => {
     
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
-
 }
