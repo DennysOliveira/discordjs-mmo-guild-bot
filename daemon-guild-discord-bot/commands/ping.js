@@ -1,9 +1,8 @@
-const { execute } = require("./play");
-
 module.exports = {
     name: 'ping',
+    aliases: ['pung', 'pang', 'peng'],
     description: 'Ping command.',
-    execute(message, args) {
+    run(message, args, cmd, client, Discord) {
         message.channel.send("pong!");
     }
 }

@@ -7,11 +7,11 @@ const queue = new Map();
 
 module.exports = {
     name: 'play',
-    aliases: ['skip', 'stop'],
+    aliases: ['p','skip', 'stop'],
     cooldown: 0,
-    description: 'Music bot.',
-    async execute(message, args, cmd, client, Discord){
-
+    description: 'Music bot.',    
+    async run(message, args, cmd, client, Discord){
+        console.log("Playing");
         const voiceChannel = message.member.voice.channel;
         if(!voiceChannel) return message.channel.send('Você precisa estar em um canal para executar esse comando!');
 
@@ -21,7 +21,7 @@ module.exports = {
 
         const serverQueue = queue.get(message.guild.id);
 
-        if(cmd === 'play') {
+        if(cmd === 'play' || cmd === 'p') {
 
             if(!args.length) return message.channel.send('Você precisa especificar um segundo argumento.');
             let song = {};
@@ -99,11 +99,17 @@ const skipSong = (message, serverQueue) => {
     {
         return message.channel.send(`Não há sons na fila de reprodução.`);
     }
+    
     serverQueue.connection.dispatcher.end();
+    
 }
 
 const stopSong = (message, serverQueue) => {
     if (!message.member.voice.channel) return message.channel.send('Você precisa estar em um canal para executar esse comando.');
+    
+    if(!serverQueue) return message.channel.send(`Não há sons na fila de reprodução.`);
+    
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
+
 }

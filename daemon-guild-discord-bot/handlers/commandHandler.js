@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 module.exports = (client, Discord) => {
-    console.log(`Loading command modules:`);
+    console.log(`Loading commands:`);
     
     const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
     
@@ -10,9 +10,9 @@ module.exports = (client, Discord) => {
         
         if(command.name) {
             client.commands.set(command.name, command);
-            console.log(`Loading module ${file}`);
+            console.log(`Loading ${file}`);
         } else {
-            console.log(`Warning when loading module ${file}`);
+            console.log(`!!! - Loading ${file}`);
             continue;
         }
     }
