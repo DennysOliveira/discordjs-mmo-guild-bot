@@ -24,4 +24,6 @@ for (const file of handlerFiles) {
     require(`./handlers/${file}`)(client, Discord, config);
 };
 
+
+
 client.login(process.env.DISCORD_APP_TOKEN);

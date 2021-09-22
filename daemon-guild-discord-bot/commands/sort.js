@@ -48,7 +48,7 @@ module.exports = {
         //#endregion
 
         // #region ~ Find guild by ID and check if it exists
-        const id = config.guildID;
+        const id = message.guild.id;
         const guild = client.guilds.cache.find((g) => g.id === id);
         
         if (!guild) {
