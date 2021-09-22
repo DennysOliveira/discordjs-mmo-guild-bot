@@ -1,0 +1,21 @@
+{
+  "name": "breakfast-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "auth0": "^2.33.0",
+    "axios": "^0.21.1",
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "email-validator": "^2.0.4",
+    "eslint": "^7.22.0",
+    "node-fetch": "^2.6.1"
+  }
+}

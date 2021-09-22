@@ -1,0 +1,3 @@
+Tue Mar 23 2021 23:41:36 GMT-0300 (Brasilia Standard Time) Parsing valid message: '/table help' from Sorcerer#6285.
+Tue Mar 23 2021 23:41:56 GMT-0300 (Brasilia Standard Time) Parsing valid message: '/table help' from Sorcerer#6285.
+Tue Mar 23 2021 23:42:26 GMT-0300 (Brasilia Standard Time) Parsing valid message: '/table helep' from Sorcerer#6285.
