@@ -1,25 +1,10 @@
 const dotenv = require('dotenv');
-dotenv.config();
-
-const validator = require("email-validator");
 const Discord = require("discord.js");
-const fetch = require('node-fetch');
 const config = require('./config.json')
-var fs = require('fs');
-const { Console } = require('console');
-const { measureMemory } = require('vm');
-
 const ytdl = require('ytdl-core');
+const fs = require('fs');
 
-
-// Tool Flags - not used variables.
-_guildMemberAdd = false;
-_guildMemberRemove = false;
-_guildMemberUpdate = false;
-_guildMessage = true;
-_guildMessageDelete = false;
-
-var servers = {};
+dotenv.config();
 
 const intents = new Discord.Intents([
     Discord.Intents.NON_PRIVILEGED, // include all non-privileged intents, would be better to specify which ones you actually need
@@ -27,6 +12,17 @@ const intents = new Discord.Intents([
 ]);
 
 const client = new Discord.Client({ ws: { intents }});
+
+client.commands  = new Discord.Collection();
+client.events    = new Discord.Collection();
+
+console.log(`Loading modules:`);
+const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'))
+for(const file of commandFiles) {
+    console.log(`Loading module ${file}`);
+    const command = require(`./commands/${file}`);
+    client.commands.set(command.name, command);
+}
 
 // Initial Bot Setup
 client.once("ready", () => {
@@ -265,64 +261,15 @@ commandsList = {
     },
     _play: "`!cramunhão play https://youtube.com/...`\nToca música.\nSuporte p/ Youtube apenas, por enquanto.",
     play : function (message, args) {
-        const url = args[0];
-        if (!url) {
-            message.channel.send(`Você precisa especificar a URL da música.`);
-            return;
-        }
-
-        if(!message.member.voice.channel) {
-            message.channel.send(`Você precisa estar em um canal pra poder tocar música! >:(`)
-            return;
-        }
-
-        if(!servers[message.guild.id]){
-            servers[message.guild.id] = {
-                queue: []
-            }
-        } 
-
-        var server = servers[message.guild.id];
-
-        server.queue.push(url);
-        let embed = new Discord.MessageEmbed()
-                    .setColor('#FF2222')
-                    .addField('${música} adicionado a fila.');
-        message.channel.send(embed);
-        
-        if(!message.member.voice.connection){
-            message.member.voice.channel.join().then( connection => {
-                playSong(connection, message);
-            });
-        };
-        
+        client.commands.get('play').execute(message, args, 'play', client, Discord);
     },
     _skip:"",
     skip: (message, args) => {
-        var server = servers[message.guild.id];
-        if (server.dispatcher) {
-            server.dispatcher.end();
-            message.channel.send("Pulando para a próxima música.");
-        };
+        client.commands.get('play').execute(message, args, 'skip', client, Discord);
     },
     _stop: "",
     stop: () => {
-        var server = servers[message.guild.id];
-        if(message.guild.voice.connection)
-        {
-            for(var i = server.queue.length -1; i >= 0; i--)
-            {
-                server.queue.splice(i, 1);
-            };
-
-            server.dispatcher.end();
-            message.channel.send("Parando as músicas e removendo a fila.");
-        }
-
-        if(message.guild.connection) {
-            message.guild.voice.connection.disconnect();
-        }
-
+        client.commands.get('play').execute(message, args, 'stop', client, Discord);
     },
     _test: "`!cramunhão test`\nTeste.",
     test : function(message, args) {
