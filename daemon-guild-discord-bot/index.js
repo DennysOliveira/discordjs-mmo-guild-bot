@@ -17,6 +17,8 @@ _guildMemberUpdate = false;
 _guildMessage = true;
 _guildMessageDelete = false;
 
+
+
 const intents = new Discord.Intents([
     Discord.Intents.NON_PRIVILEGED, // include all non-privileged intents, would be better to specify which ones you actually need
     "GUILD_MEMBERS", // lets you request guild members 
@@ -34,15 +36,12 @@ client.once("ready", () => {
     // Create a bot invite link auto-gen with proper permissions.
 });
 
-
-
 // On Message Received
 client.on("message", function (message) {
     // Get Formatted Time
     let currentTime = new Date();
     currentTime.toDateString();
 
-   
 
     // If message is not prefixed (not a command).
     if (!message.content.startsWith(config.prefix)) {
@@ -82,16 +81,56 @@ client.login(process.env.DISCORD_APP_TOKEN);
 var arr = [];
 
 commandsList = {
-    test : function(message, args) {
-        message.channel.send("Tested.");
+    _help: "`!cramunhão help`\nMostra isso.",
+    help: function(message, args) {
+        let string = "";
+        for (var key in commandsList) {
+            if(key[0] != "_") {
+                string += "**"+ key.toUpperCase() + "**\n";
+
+                let descriptor = "_" + key;
+                if(commandsList[descriptor])
+                {
+                    string += commandsList[descriptor] + "\n";
+                } else {
+                    string += "\n";
+                }
+
+                string += "\n";
+            }
+        }
+
+        if(string) {
+            message.channel.send(`${string}`);
+        }
     },
+    _fala: "`!cramunhão fala Boa noite.`\nFaz com que o cramunhão diga as palavras no seu lugar.",
+    fala: function(message, args) {
+        
+        let string = "";
+        args.forEach(word => {
+            string += word + " ";
+            
+        });
+        
+        message.channel.send(`**${string}**`);
+        
+        message.delete();        
+    },    
+    _dice: "`!cramunhão dice 20`\nRola um dado de quantos lados você especificar.",
     dice : function(message, args) {
         let rand = Math.floor(Math.random() * args[0]) + 1;
         message.channel.send(`Você rolou **${rand}** no dado de ${args[0]} lados.`);
     },
+    _sort: "`!cramunhão sort @cargo`\nSorteia dentre os membros de um cargo especificado.",
     sort : function(message, args) {
         // #region ~ Define args from request input
-        var reqStatus = "ALL";
+        const reqStatusEnum = { 
+            TODOS: 1,
+            CANAL: 2,
+            VOZ: 3 
+        };
+        var reqStatus = reqStatusEnum.TODOS;
         var reqMaximum = 0;
 
         // Role to be sorted
@@ -106,10 +145,18 @@ commandsList = {
 
         // Status to be considered
         if(args[1]) {
-            reqStatus = args[1];
+            let string = args[1];
+            string.toUpperCase();
+
+            if (reqStatusEnum[string])
+            {
+                reqStatus = reqStatusEnum[string];
+            } else {
+                message.channel.send("Você precisa escolher dentre os seguintes filtros do cargo para o sorteio: **todos**, **canal** ou **voz**.");
+            }
         }
         else {
-            reqStatus = "ALL";
+            reqStatus = reqStatusEnum.TODOS;
         }
 
         // Maximum number of people to be shown.
@@ -138,10 +185,9 @@ commandsList = {
         }
         //#endregion
 
-        var arr = new Array();
-
         // #region ~ Do fetch and sort through the member list.
         // Discord.RoleManager: fetch specific requested role.
+        var arr = new Array();
         const request = guild.roles.fetch(roleRequested.id)
         .then( role => {
             // Log specific role members size.
@@ -217,32 +263,33 @@ commandsList = {
         // #endregion
         
     },
+    _play: "`!cramunhão play https://youtube.com/...`\nToca música.\nSuporte p/ Youtube apenas, por enquanto.",
     play : function (message, args) {
         const url = args[0];
         if (!url) {
             message.channel.send(`Você precisa especificar a URL da música.`);
             return;
         }
+    },
+    _test: "`!cramunhão test`\nTeste.",
+    test : function(message, args) {
+        let string = args[0];
+        let roleId = string.slice(3, -1);
+
+        console.log(roleId);
+        console.log(roleId.length);
+
+        const roleRequest = message.guild.roles.cache.find((role) => role.id === roleId);
+        
+        if(!roleRequest) {
+            message.channel.send(`Não consegui encontrar esse cargo em ${message.guild.name}.`);
+            return;
+        }
+        else {
+            message.channel.send(`Você quis dizer: ${roleRequest.name}?`);
+        }
     }
 };
-
-async function fetchRoleCount(guildId, roleId)
-{
-    const guild = client.guilds.cache.find((g) => g.id === guildId);
-    let count = 0
-
-    const request = await guild.roles.fetch(roleId)
-    .then(role => {
-        console.log(role.members.size);
-        count = role.members.size;
-        return count;
-    })
-    .catch(err => {
-        console.log(err);
-        return;
-    });
-    
-}
 
 function parseCommand(message) {
     const commandBody = message.content.slice(config.prefix.length); // Returns a string without the prefix. 
@@ -328,39 +375,3 @@ function LogToFile(type, directory, filename, content) {
     });
 }
 
-
-
-// function DMSendErr(messageHandler, errMsg) {
-//     messageHandler.author.send('**Hey ' + messageHandler.author.username + '!**');
-//     messageHandler.author.send('Your command "**' + messageHandler.content + '**" is invalid.');
-//     messageHandler.author.send(errMsg);
-
-//     console.log('User ' + messageHandler.author.username + ' failed due to err: ' + errMsg);
-// }
-
-
-// if (command === 'test') {
-//     message.channel.send("<@" + message.author.id + "> \n" +
-//     "Second line. **Bold text.**");
-
-// } else 
-// if (command === 'help') {
-//     const embed = new Discord.MessageEmbed()
-//         .setColor('#00ffff')
-//         .setTitle('Information')
-//         .setURL("https://daemons.vercel.app/")
-//         .setAuthor('Daemons')
-//         .setDescription('For administrative commands, please call this command on admin channels.')            
-//         .setTimestamp()
-//         .setFooter('Daemons - New World')
-//         .addFields(
-//             { name: 'Placeholder', value: '/placeholder command' }
-//         );
-
-//     if(message.channel.name === "admin") {
-//         embed.addField('Listar membros registrados:', '/cramunhão membros');
-//         message.channel.send(embed);
-//     } else {
-//         message.channel.send(embed);
-//     }
-// }   

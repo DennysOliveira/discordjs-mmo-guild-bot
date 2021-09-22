@@ -1,6 +1,6 @@
 {
-    "prefix" : "/daemons ",
-    "activity" : "/daemons Ajuda",
+    "prefix" : "!cramunhão ",
+    "activity" : "!cramunhão",
     "role" : "DAEMON",
     "guildID" : "862509251704127509"
 }
