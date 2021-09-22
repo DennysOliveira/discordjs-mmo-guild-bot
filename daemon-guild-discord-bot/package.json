@@ -16,6 +16,10 @@
     "dotenv": "^8.2.0",
     "email-validator": "^2.0.4",
     "eslint": "^7.22.0",
-    "node-fetch": "^2.6.1"
+    "ffmpeg-static": "^4.4.0",
+    "node-fetch": "^2.6.1",
+    "opusscript": "^0.0.8",
+    "yt-search": "^2.10.1",
+    "ytdl-core": "^4.9.1"
   }
 }
