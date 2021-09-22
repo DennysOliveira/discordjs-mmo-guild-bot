@@ -87,7 +87,7 @@ module.exports = (client, Discord, config, message) => {
     
         // Add folder prefix.
         // directory =  "../logs/" + directory;
-        directory =  `../logs/${message.guild.id}/${directory}`;
+        directory =  `./logs/${message.guild.id}/${directory}`;
         
         // Check if folder exists, if not -> create it.
         if(!fs.existsSync(directory)){
