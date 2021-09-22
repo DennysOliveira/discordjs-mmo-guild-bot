@@ -92,22 +92,31 @@ commandsList = {
     sort : function(message, args) {
         // #region ~ Define args from request input
         var reqStatus = "ALL";
-        var reqRole = 0;
+        var reqMaximum = 0;
 
+        // Role to be sorted
         if(!args[0])
         {
             message.channel.send(`Você precisa especificar o cargo a ser sorteado, exemplo: "/daemons sort CARGO".`);
             return;
         } 
         else {
-            reqRole = args[0];
+            var reqRole = args[0];
         }
 
+        // Status to be considered
         if(args[1]) {
             reqStatus = args[1];
         }
         else {
             reqStatus = "ALL";
+        }
+
+        // Maximum number of people to be shown.
+        if (args[2]) {
+            var reqMaximum = args[2];
+        } else {
+            var reqMaximum = 0;
         }
         //#endregion
 
@@ -167,6 +176,8 @@ commandsList = {
                         console.log(`Sorting: ${arr.length}/${role.members.size} ${kvp[1]}`);
                     }
 
+                    
+
                     // If this array meets the size intended 
                     if (arr.length === role.members.size)
                     {
@@ -177,16 +188,25 @@ commandsList = {
                             return 0;
                         })
 
+                        // Limit the array to the size requested
+                        if (reqMaximum != 0)
+                        {
+                            arr = arr.slice(role.members.size - reqMaximum);
+                        }
+
+                        // Formulates the string to be sent
                         let string = "";
                         let position = 1;
                         arr.forEach( member => {
+                            // Send the string for each message character limit before continuing
                             if(string.length >= 1800) 
                             {
                                 message.channel.send(string);
                                 string = "";
                             }
-
-                            string = string + `${position}º - **${member[1]}**\nRolagem: ${member[0]}\n\n`
+                            
+                            // Description line for each member sorted.
+                            string = string + `${position}º - **${member[1]}** - Rolagem: ${member[0]}\n`
                             position++;
                         });
                         message.channel.send(string);
@@ -196,6 +216,13 @@ commandsList = {
         });
         // #endregion
         
+    },
+    play : function (message, args) {
+        const url = args[0];
+        if (!url) {
+            message.channel.send(`Você precisa especificar a URL da música.`);
+            return;
+        }
     }
 };
 
