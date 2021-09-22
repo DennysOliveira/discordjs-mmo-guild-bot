@@ -16,6 +16,13 @@ const client = new Discord.Client({ ws: { intents }});
 client.commands  = new Discord.Collection();
 client.events    = new Discord.Collection();
 
+// Load Handlers
+const handlers = fs.readdirSync('./handlers/').filter(file => file.endsWith('.js'))
+for (const file of handlerFiles) {
+    console.log(`Loading handler: ${file}`);
+    require(`./handlers/${file}`)(client, Discord);
+};
+
 console.log(`Loading modules:`);
 const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'))
 for(const file of commandFiles) {
