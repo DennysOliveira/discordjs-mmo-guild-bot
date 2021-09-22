@@ -13,7 +13,7 @@ function Header() {
     return (
         <div className="headerContainer">
             <nav className="headerContent">
-                <div className="imageContainer"><img src="/archeagelogo.jpg"  width="70px" height="60px" /></div>
+                <div className="imageContainer"><img src="/daemons.jpg"  width="70px" height="60px" /></div>
                 <div className="float-left">
                     
                     <ul>
