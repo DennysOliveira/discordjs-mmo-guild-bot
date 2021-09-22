@@ -17,19 +17,14 @@ client.commands  = new Discord.Collection();
 client.events    = new Discord.Collection();
 
 // Load Handlers
+console.log(`Loading handlers:`);
 const handlers = fs.readdirSync('./handlers/').filter(file => file.endsWith('.js'))
 for (const file of handlerFiles) {
     console.log(`Loading handler: ${file}`);
     require(`./handlers/${file}`)(client, Discord);
 };
 
-console.log(`Loading modules:`);
-const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'))
-for(const file of commandFiles) {
-    console.log(`Loading module ${file}`);
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-}
+
 
 // Initial Bot Setup
 client.once("ready", () => {
