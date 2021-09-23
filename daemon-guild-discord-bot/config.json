@@ -1,6 +1,6 @@
 {
-    "prefix" : "!ddev ",
-    "activity" : "Dev Branch",
+    "prefix" : "!d ",
+    "activity" : "!d ajuda",
     "role" : "DAEMON",
     "guildID" : "862509251704127509"
 }
