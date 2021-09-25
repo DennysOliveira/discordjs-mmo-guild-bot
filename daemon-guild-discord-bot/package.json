@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "email-validator": "^2.0.4",
     "eslint": "^7.22.0",
     "ffmpeg-static": "^4.4.0",
+    "mongoose": "^6.0.7",
     "node-fetch": "^2.6.1",
     "opusscript": "^0.0.8",
     "yt-search": "^2.10.1",

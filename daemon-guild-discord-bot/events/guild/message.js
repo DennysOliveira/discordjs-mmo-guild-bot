@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-module.exports = (client, Discord, config, message) => {
+module.exports = (client, Discord, config, database, message) => {
     // Get Formatted Time
     let currentTime = new Date();
     currentTime.toDateString();
@@ -15,10 +15,9 @@ module.exports = (client, Discord, config, message) => {
     const command = client.commands.get(request.cmd) || client.commands.find(a => a.aliases && a.aliases.includes(request.cmd));
     
     // Validate and run
-    if (command) command.run(message, request.args, request.cmd, client, Discord);
+    if (command) command.run(message, request.args, request.cmd, client, Discord, database);
 
-
-    
+   
     //#region ~ Functions
     function doValidate(message)
     {
@@ -114,28 +113,3 @@ module.exports = (client, Discord, config, message) => {
     }
     //#endregion
 };
-
-// function callCommand(commandArr){
-//     message = commandArr[0];
-//     command = commandArr[1];
-//     args = commandArr[2];
-
-//     if (commandsList[command])
-//     {
-//         // Call the proper command inside the Commands library, if it exists.
-//         let log = `CallCommand> Valid command called by user ${message.author.username}#${message.author.discriminator} -> ${command}`;
-//         LogToFile("ValidCommand", "commands", "calls", log, message)
-
-//         console.log(log);
-//         commandsList[command](message, args);
-//     }
-//     else
-//     {
-//         let log = `CallCommand> Invalid command called by user ${message.author.username}#${message.author.discriminator}. Command doesn't exist -> ${command}`;
-//         LogToFile("InvalidCommand", "commands", "calls", log, message);
-//         console.log(log);
-//     }
-// }
-
-
-
