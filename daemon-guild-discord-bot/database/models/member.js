@@ -9,7 +9,9 @@ const memberSchema = new Schema({
     joined:         { type: Date,   default: Date.now },
     role:           { type: String, default: 'Não definido'},
     profession:     { type: String, default: 'Não definido'},
-    comments:       { type: String }
+    comments:       { type: String },
+    lastUpdated:    { type: Date,   required: false },
+    lastUpdatedBy:  { type: String, required: false }
 });
 
 const Member = mongoose.model('Member', memberSchema);
