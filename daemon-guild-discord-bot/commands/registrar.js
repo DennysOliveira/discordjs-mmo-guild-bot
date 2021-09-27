@@ -22,6 +22,16 @@ module.exports = {
             const profession    = validateProfession(args[2]);
             const comments      = args[3];
             
+            if(role.status == "invalid") {
+                message.channel.send(`Função ${args[1]} inválida.
+                As funções disponíveis são ${[...role.validRoles]}`);
+                return;
+            }
+
+            if(!profession.status == "invalid") {
+
+                return;
+            }
             
             // const user = await client.users.cache.find(user => user.id === userId);
             const user = await client.users.fetch(userId);
@@ -31,14 +41,15 @@ module.exports = {
                 userId,
                 user.username,
                 user.discriminator,
-                role,
-                profession,
+                role.name,
+                profession.name,
                 comments
             )
             
-            if(!request.status) {
+            if(request.status == "error") {
                 
-                if(request.status.contains("duplicate")){
+                
+                if(message.contains("duplicate")){
                     message.channel.send(`O usuário ${user.username}#${user.discriminator} já está registrado. Para alterar seus dados, use o comando **!d atualizar**.`)
                 }
                 else {
@@ -79,7 +90,7 @@ module.exports = {
 
             const request = await database.updateMember(userId, member)
 
-            if(!request.status) {
+            if(request.status == "error") {
                 message.channel.send(`Houve um erro ao executar esse comando. ${request.msg}`)
                 return;
             }
@@ -99,7 +110,7 @@ module.exports = {
             const request = await database.deleteMember(userId);
             const user = await client.users.fetch(userId);
 
-            if(!request.status) {
+            if(request.status == "error") {
                 message.channel.send("Houve um problema ao executar esse comando. Contate um administrador.");
                 return;
             }
@@ -113,27 +124,81 @@ module.exports = {
         if (cmd === 'listar')
         {
             if(!message.member.hasPermission("ADMINISTRATOR")){
-                message.channel.send("Você não tem permissão de executar esse comando.")
+                // message.channel.send("Você não tem permissão de executar esse comando.")
                 return;
             }
 
-            const response = await database.fetchMembers();
+            const request = await database.fetchMembers();
 
-            if(!response.status) {
-                message.channel.send(`Houve um erro ao executar esse comando. ${response.msg}`);
+            if(request.status == "error") {
+                // message.channel.send(`Houve um erro ao executar esse comando. ${request.msg}`);
             }
-            
-            var string = "```" + "Membro               Função               Profissão           Descrição           " + "\n";
-            string +=            "----------------------------------------------------------------------------------" + "\n";
 
-            response.forEach((member) => {
+            var string;
+            var members = request.data;
+            
+            // Get Profession and Role quantities
+            // Roles and Professions index
+            var staticRoles = { melee: 0, ranged: 0, mage: 0, tank: 0, healer: 0, nd: 0 };
+            var staticProfs = { ferraria: 0, armaria: 0, engenharia: 0, joalheria: 0, arcana: 0, culinaria: 0, mobilia: 0, nd: 0 };
+
+            // Add profession and roles to index
+            members.forEach(member => {
+                console.log(`Validating role: ${member.role}`);
+                
+                let role = validateRole(member.role);
+                if(role.status == "valid") {
+                    staticRoles[member.role] += 1;
+                }
+                else {
+                    staticRoles["nd"] += 1;
+                }                
+
+                console.log(`Validating prof: ${member.role}`);
+                let prof = validateProfession(member.profession);
+                if(prof.status == "valid") {
+                    staticProfs[member.profession] += 1;
+                }
+                else {
+                    staticProfs["nd"] += 1;
+                }
+            });
+
+            // Display General Overview (TODO: FixateStringSize and better layout to be displayed)
+            string += "\n**Lista dos Membros Registrados**\n"
+            string += "```\n"
+            string += `Funções:\n`
+            string += `${fixateStringSize(`Tanques: ${staticRoles.tank}`, 16)} ${fixateStringSize(`Healer: ${staticRoles.healer}`, 16)} ${fixateStringSize(`Magos: ${staticRoles.mage}`, 16)} ${fixateStringSize(`Ranged: ${staticRoles.ranged}`, 16)} ${fixateStringSize(`Melee: ${staticRoles.melee}`, 16)} ${fixateStringSize(`Não definido: ${staticRoles.nd}`, 16)} \n`
+            string += "```"
+            string += "```"
+            string += `Profissões:\n`
+            string += `${fixateStringSize(`Ferraria: ${staticProfs.ferraria}`, 16)} ${fixateStringSize(`Armaria: ${staticProfs.armaria}`, 16)} ${fixateStringSize(`Engenharia: ${staticProfs.engenharia}`, 16)} ${fixateStringSize(`Joalheria: ${staticProfs.joalheria}`, 16)} ${fixateStringSize(`Arcana: ${staticProfs.arcana}`, 16)} ${fixateStringSize(`Culinária: ${staticProfs.culinaria}`, 16)} ${fixateStringSize(`Mobília: ${staticProfs.mobilia}`, 16)} ${fixateStringSize(`Não def: ${staticProfs.nd}`, 16)}\n`
+            string += "```"
+            
+            // Sort Roles Alphabetically
+            // Deprecated (now done in fetchMembers directly from the db)
+            // Still might be useful later on
+            // members.sort((a, b) => {                
+            //     if(a.role > b.role) return -1;
+            //     if(a.role < b.role) return 1;
+            //     return 0;
+
+            // })
+          
+            
+            // Add Display Header for member listing
+            string += "```" + "Membro               Função               Profissão           Descrição           " + "\n";
+            string +=         "----------------------------------------------------------------------------------" + "\n";
+
+            // Format Display
+            members.forEach((member) => {
                 let role = "";
                 let prof = "";
                 let user = fixateStringSize(`${member.username}#${member.discriminator}`, 20);
                 if (member.role) {role = fixateStringSize(member.role, 20)} else { role = fixateStringSize("Não definido", 20)};
                 if (member.profession) { prof = fixateStringSize(member.profession, 20)} else { prof = fixateStringSize("Não definido", 20)};
                 
-                string += `${user} ${role} ${prof}\n`;
+                string += `${user} ${capStr(role)} ${capStr(prof)}\n`;
             });
 
             string += "```"
@@ -160,24 +225,38 @@ module.exports = {
         }
 
         function validateRole(role){
-            validRoles = [
-                "", "",
-                "", "",
-                ""
+            const validRoles = [
+                "tank", "ranged",
+                "melee", "mage",
+                "healer"
             ]
 
-            return role;
+            if(validRoles.includes(role)) {
+                return { status: "valid",   validRoles, name: role };
+            } else {
+                return { status: "invalid", validRoles, name: "nd" };
+            }
         }
 
         function validateProfession(profession){
-            validProfessions = [
-                "", "", 
-                "", "",
-                "", "",
-                "", ""
+            const validProfessions = [
+                "ferraria", "armaria", 
+                "engenharia", "joalheria",
+                "arcana", "culinaria",
+                "mobilia"
             ]
 
-            return profession;
+            if(validProfessions.includes(profession)) {
+                return { status: "valid",   validProfessions, name: profession };
+            } else {
+                return { status: "invalid", validProfessions, name: "nd" };
+            }
+        }
+
+        function capStr(string){
+            let lwr = string.toLowerCase();
+            
+            return string.charAt(0).toUpperCase() + lwr.slice(1);
         }
     },
 };

@@ -37,11 +37,12 @@ module.exports = {
         try {
             const response = await member.save()
             console.log(response)
-            return response;
+            return { status: "success" , data: response };
         }   
         catch (err) {
             console.log(err.message)
-            return { status: 0, msg: err.message };
+            let response = { status: "error", msg: err.message };
+            return response;
         }     
         
     },
@@ -57,33 +58,38 @@ module.exports = {
                 lastUpdatedBy: member.lastUpdatedBy
             });
 
-            const response = Member.findOneAndUpdate({ userId }, update);
-            return response;
+            const response = await Member.findOneAndUpdate({ userId }, update);
+            return { status: "success" , data: response };
         }
         catch (err) {
             console.log(err.message)
-            return { status: 0, msg: err.message };
+            let response = { status: "error", msg: err.message };
+            return response;
         }
     },
     async deleteMember(userId) {
         try {
-            const response = Member.findOneAndDelete({ userId });
-            return response;
+            const response = await Member.findOneAndDelete({ userId });
+            return { status: "success" , data: response };
         }
         catch (err) {
             console.log(err.message)
-            return { status: 0, msg: err.message };
+            let response = { status: "error", msg: err.message };
+            return response;
         }
     },
     async fetchMembers() {
         try {
-            const response = await Member.find();
+            // Fetch from db sorting by descending role
+            const response = await Member.find().sort({ role: -1 });
             
-            return response;
+            return { status: "success" , data: response };
         }
         catch (err) {
             console.log(err.message)
-            return { status: 0, msg: err.message };
+
+            let response = { status: "error", msg: err.message };
+            return response;
         };
 
     },
