@@ -88,14 +88,13 @@ const videoPlayer = async (guild, song) => {
         return;
     }
 
-    const stream = await ytdl(song.url, { filter: 'audioonly'});
+    const stream = await ytdl(song.url, { filter: 'audioonly', highWaterMark: 1 << 25  });
     songQueue.connection.play(stream, { seek: 0, volume: 0.5, type: 'opus' })
     .on('finish', () => {
         songQueue.songs.shift();
         clearTimeout(songQueue.timer);
         videoPlayer(guild, songQueue.songs[0]);
     });
-    // await songQueue.textChannel.send(`Tocando **${song.title}**.\n${song.url}`);
     await songQueue.textChannel.send(new Discord.MessageEmbed().setColor('#FF0000').setDescription(`Tocando **${song.title}**.\n${song.url}`));
 }
 
