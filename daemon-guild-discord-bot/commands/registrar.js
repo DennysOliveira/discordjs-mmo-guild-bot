@@ -60,12 +60,17 @@ module.exports = {
             const userId        = args[0].slice(3, args[0].length -1);
             const role          = validateRole(args[1]);
             const profession    = validateProfession(args[2]);
-            const comments      = args[3];
+            const comments      = args[3];  
 
-            if(!message.member.hasPermission("ADMINISTRATOR") || (message.member.user.id != userId)){
-                message.channel.send("Você não tem permissão de executar esse comando.")
+            if(message.member.user.id != userId && !message.member.hasPermission("ADMINISTRATOR")){
+                message.channel.send("Você só pode alterar seu próprio registro.")
                 return;
             }
+
+            // if(!message.member.hasPermission("ADMINISTRATOR")){
+            //     message.channel.send("Você não tem permissão de executar esse comando.")
+            //     return;
+            // }
             
             const user = await client.users.fetch(userId);
 
