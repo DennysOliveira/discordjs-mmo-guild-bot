@@ -55,17 +55,17 @@ module.exports = {
 
         if (cmd == 'atualizar')
         {   
-            if(!message.member.hasPermission("ADMINISTRATOR")){
-                message.channel.send("Você não tem permissão de executar esse comando.")
-                return;
-            }
-
             // Define arguments based on message request
             const lastUpdatedBy = `${message.member.user.username}#${message.member.user.discriminator}`;
             const userId        = args[0].slice(3, args[0].length -1);
             const role          = validateRole(args[1]);
             const profession    = validateProfession(args[2]);
             const comments      = args[3];
+
+            if(!message.member.hasPermission("ADMINISTRATOR") || (message.member.user.id != userId)){
+                message.channel.send("Você não tem permissão de executar esse comando.")
+                return;
+            }
             
             const user = await client.users.fetch(userId);
 
