@@ -6,6 +6,7 @@ const memberSchema = new Schema({
     userId:         { type: Number, required: true, unique: [true, 'Already Exists'] },
     username:       { type: String, required: true },
     discriminator:  { type: String, required: true },
+    ign:            { type: String, required: true },
     joined:         { type: Date,   default: Date.now },
     role:           { type: String, default: 'Não definido'},
     profession:     { type: String, default: 'Não definido'},
