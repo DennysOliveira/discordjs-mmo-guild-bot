@@ -23,15 +23,15 @@ module.exports = {
         const connection = await mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOSTPORT}/${process.env.DB_NAME}?${process.env.DB_OPTS}`);        
         return connection;
     },
-    async createMember(creator, userId, username, discriminator, role = null, profession = null, comments = null) {
+    async createMember(creator, userId, username, discriminator, ign, role = "nd", profession = "nd") {
         const member = new Member({
             createdBy: creator,
             userId: userId,
             username: username,
             discriminator: discriminator,
+            ign: ign,
             role: role,
-            profession: profession,
-            comments: comments
+            profession: profession
         });
 
         try {
@@ -48,7 +48,7 @@ module.exports = {
     },
     async updateMember(userId, member) {
         try {
-            const update = new Member ({
+            const update = ({
                 username: member.username,
                 discriminator: member.discriminator,
                 role: member.role,
@@ -59,6 +59,7 @@ module.exports = {
             });
 
             const response = await Member.findOneAndUpdate({ userId }, update);
+            console.log(response);
             return { status: "success" , data: response };
         }
         catch (err) {
