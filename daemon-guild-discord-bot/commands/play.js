@@ -81,9 +81,9 @@ const videoPlayer = async (guild, song) => {
     if(!song) {        
         queue.delete(guild.id);
 
-        songQueue.timer = setTimeout(() => {
-            songQueue.voiceChannel.leave();
-        }, 60 * 1000);
+        // songQueue.timer = setTimeout(() => {
+        //     songQueue.voiceChannel.leave();
+        // }, 60 * 1000);
 
         return;
     }
