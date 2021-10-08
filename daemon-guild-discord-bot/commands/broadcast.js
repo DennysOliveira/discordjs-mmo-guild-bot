@@ -4,6 +4,10 @@ module.exports = {
     description: 'Broadcasts a message to all users from a specific role into their DM channel.',
     async run(message, args, cmd, client, Discord) {
         try {
+            if(!message.member.hasPermission("ADMINISTRATOR")){
+                throw "Você precisa ser um administrador para executar esse comando."
+            }
+
             const roleId = args[0].slice(3, args[0].length -1);
             const cast   = args.slice(1).join(' ');
 
