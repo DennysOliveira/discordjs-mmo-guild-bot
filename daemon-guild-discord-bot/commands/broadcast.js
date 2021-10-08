@@ -39,10 +39,28 @@ module.exports = {
 
             
             validMembers.forEach(member => {
-                member.send(cast);
+                
+                member.send(
+                    new Discord.MessageEmbed()
+                    .setColor('#FF0000')
+                    .setTitle(message.guild.name)
+                    .setDescription(cast)
+                    .setFooter(`Enviado por ${message.author.username}#${message.author.discriminator}`, message.author.avatarURL())
+                    .setTimestamp()
+                    .setThumbnail(message.author.avatarURL())
+                );
+
+                
             });
 
-            message.channel.send(new Discord.MessageEmbed().setColor('#FF0000').setDescription(`Broadcast enviado com sucesso para ${validMembers.length} usuários do cargo **${role.name}**.`));
+            message.channel.send(
+                new Discord.MessageEmbed()
+                .setColor('#FF0000')
+                .setDescription(`Broadcast enviado com sucesso para ${validMembers.length} usuários do cargo **${role.name}**.`)
+                .setFooter(`Enviado por ${message.author.username}#${message.author.discriminator}`, message.author.avatarURL())
+                .setTimestamp()
+                
+            );
 
             
         }
