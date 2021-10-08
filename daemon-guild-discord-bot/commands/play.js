@@ -103,7 +103,10 @@ const skipSong = (message, serverQueue) => {
     
     if(!serverQueue) return message.channel.send(`Não há sons na fila de reprodução.`);
     
+
+    message.channel.send(`Pulando para a próxima música na lista de reprodução.`);
     serverQueue.connection.dispatcher.end();
+
     
 }
 
@@ -112,6 +115,8 @@ const stopSong = (message, serverQueue) => {
     
     if(!serverQueue) return message.channel.send(`Não há sons na fila de reprodução.`);
     
+
+    message.channel.send(`Removendo todas as músicas.`);
     serverQueue.songs = [];
     serverQueue.connection.dispatcher.end();
 }
