@@ -44,15 +44,25 @@ module.exports = {
             
             validMembers.forEach(member => {
                 
-                member.send(
-                    new Discord.MessageEmbed()
-                    .setColor('#FF0000')
-                    .setTitle(message.guild.name)
-                    .setDescription(cast)
-                    .setFooter(`Enviado por ${message.author.username}#${message.author.discriminator}`, message.author.avatarURL())
-                    .setTimestamp()
-                    .setThumbnail(message.author.avatarURL())
-                );
+                try{
+                    member.send(
+                        new Discord.MessageEmbed()
+                        .setColor('#FF0000')
+                        .setTitle(message.guild.name)
+                        .setDescription(cast)
+                        .setFooter(`Enviado por ${message.author.username}#${message.author.discriminator}`, message.author.avatarURL())
+                        .setTimestamp()
+                        .setThumbnail(message.author.avatarURL())
+                    );
+                }
+                catch (err) {
+                    if(err.code == '50007') {
+                        console.log(`user ${member.username} has dms disabled`);
+                    }
+                    else {
+                        console.log(err)
+                    }
+                }
 
                 
             });
